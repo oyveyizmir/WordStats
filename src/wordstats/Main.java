@@ -1,8 +1,15 @@
 package wordstats;
 
-public class Main {
+import java.io.PrintStream;
 
-    public static void main(String[] args) {
-	// write your code here
+public class Main {
+    public static void main(String[] args) throws Exception {
+        WordReader reader = new WordReader();
+        String word;
+
+        PrintStream out = new PrintStream(System.out, true, "UTF-8");
+        while ((word = reader.getNextWord()) != null) {
+            out.println(word);
+        }
     }
 }
