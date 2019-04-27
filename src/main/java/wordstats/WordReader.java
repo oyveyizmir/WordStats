@@ -1,5 +1,6 @@
 package wordstats;
 
+import java.io.InputStream;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,19 +12,23 @@ public class WordReader {
         EndOfInput
     }
 
-    private Scanner scanner = new Scanner(System.in, "utf-8");
+    private Scanner scanner;
     private Pattern wordPattern = Pattern.compile("\\b\\p{L}+(-\\p{L}+)*\\b");
     private String line;
     private Matcher matcher;
     private State state = State.LineRequired;
 
+    public WordReader(InputStream in) {
+        scanner = new Scanner(in, "utf-8");
+    }
+
     public String getNextWord() throws Exception {
         switch (state) {
             case LineRequired:
                 line = readLine();
-                if (line == null) {
+                if (line == null)
                     return getNextWord(State.EndOfInput);
-                } else {
+                else {
                     matcher = wordPattern.matcher(line);
                     return getNextWord(State.WordRequired);
                 }
