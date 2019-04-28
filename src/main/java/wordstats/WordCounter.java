@@ -9,6 +9,7 @@ public class WordCounter {
     private List<WordEntry> sortedWords;
 
     public void count(String word) {
+        sortedWords = null;
         String key = word.toLowerCase();
         WordEntry wordEntry = words.get(key);
         if (wordEntry == null) {
@@ -18,11 +19,15 @@ public class WordCounter {
         wordEntry.count(word);
     }
 
-    public void sort() {
+    private void sortByFrequency() {
         sortedWords = words.values().stream()
                 .sorted((e1, e2) -> e2.getCount() - e1.getCount())
                 .collect(Collectors.toList());
     }
 
-    public List<WordEntry> getWords() { return sortedWords; }
+    public List<WordEntry> getWords() {
+        if (sortedWords == null)
+            sortByFrequency();
+        return sortedWords;
+    }
 }

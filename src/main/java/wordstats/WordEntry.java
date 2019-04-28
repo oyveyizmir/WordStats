@@ -15,7 +15,8 @@ public class WordEntry {
     }
 
     public void count(String word) {
-        this.word = word;
+        if (this.word == null)
+            this.word = word;
 
         IntWrapper count = variations.get(word);
         if (count == null)

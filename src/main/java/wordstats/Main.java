@@ -11,8 +11,6 @@ public class Main {
         while ((word = reader.getNextWord()) != null)
             counter.count(word);
 
-        counter.sort();
-
         PrintStream out = new PrintStream(System.out, true, "UTF-8");
         for (WordEntry entry : counter.getWords()) {
             out.println(entry.getWord() + ", " + entry.getCount());

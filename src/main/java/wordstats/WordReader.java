@@ -13,25 +13,24 @@ public class WordReader {
     }
 
     private Scanner scanner;
-    private Pattern wordPattern = Pattern.compile("\\b\\p{L}+(-\\p{L}+)*\\b");
-    private String line;
+    private Pattern wordPattern = Pattern.compile("\\b\\p{L}[-'\\p{L}+]*\\b");
     private Matcher matcher;
     private State state = State.LineRequired;
 
     public WordReader(InputStream in) {
-        scanner = new Scanner(in, "utf-8");
+        scanner = new Scanner(in, "UTF-8");
     }
 
     public String getNextWord() throws Exception {
         switch (state) {
             case LineRequired:
-                line = readLine();
-                if (line == null)
-                    return getNextWord(State.EndOfInput);
-                else {
+                if (scanner.hasNextLine()) {
+                    String line = readLine();
                     matcher = wordPattern.matcher(line);
                     return getNextWord(State.WordRequired);
                 }
+                else
+                    return getNextWord(State.EndOfInput);
 
             case WordRequired:
                 if (matcher.find())
@@ -54,16 +53,12 @@ public class WordReader {
 
     private String readLine() {
         if (!scanner.hasNextLine())
-            return null;
+            return "";
 
-        String line = scanner.nextLine();
-        while (line.trim().endsWith("-")) {
-            if (scanner.hasNextLine())
-                line += scanner.nextLine();
-            else
-                break;
-        }
+        String line = scanner.nextLine().trim();
+        if (!line.endsWith("-"))
+            return line;
 
-        return line;
+        return line.substring(0, line.length() - 1) + readLine();
     }
 }
