@@ -1,6 +1,8 @@
 package wordstats;
 
 import org.junit.Test;
+import wordstats.Counter.WordCounter;
+import wordstats.Counter.WordEntry;
 
 import java.util.List;
 import java.util.stream.Stream;

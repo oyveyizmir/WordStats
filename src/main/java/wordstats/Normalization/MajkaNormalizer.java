@@ -1,4 +1,7 @@
-package wordstats;
+package wordstats.Normalization;
+
+import wordstats.Language;
+import wordstats.PartOfSpeech;
 
 import java.io.*;
 import java.util.ArrayList;

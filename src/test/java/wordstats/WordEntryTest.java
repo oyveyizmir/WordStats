@@ -1,6 +1,7 @@
 package wordstats;
 
 import org.junit.Test;
+import wordstats.Counter.WordEntry;
 
 import static org.junit.Assert.*;
 

@@ -1,4 +1,6 @@
-package wordstats;
+package wordstats.Normalization;
+
+import wordstats.PartOfSpeech;
 
 public class NormalizationResult {
     public final String word;

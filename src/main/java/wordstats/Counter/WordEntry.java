@@ -1,4 +1,7 @@
-package wordstats;
+package wordstats.Counter;
+
+import wordstats.IntWrapper;
+import wordstats.Variation;
 
 import java.util.ArrayList;
 import java.util.HashMap;

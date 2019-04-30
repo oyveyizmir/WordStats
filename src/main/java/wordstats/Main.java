@@ -1,12 +1,19 @@
 package wordstats;
 
+import wordstats.Configuration.CommandLineParser;
+import wordstats.Configuration.Settings;
+import wordstats.Counter.WordCounter;
+import wordstats.Counter.WordEntry;
+import wordstats.Normalization.MajkaNormalizer;
+import wordstats.Normalization.NormalizationResult;
+
 import java.io.PrintStream;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         CommandLineParser parser = new CommandLineParser();
-        Configuration conf = parser.ParseArgs(args);
+        Settings conf = parser.ParseArgs(args);
 
         WordReader reader = new WordReader(System.in);
         WordCounter counter = new WordCounter();

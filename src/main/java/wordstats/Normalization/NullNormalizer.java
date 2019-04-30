@@ -1,4 +1,4 @@
-package wordstats;
+package wordstats.Normalization;
 
 import java.util.ArrayList;
 import java.util.List;
