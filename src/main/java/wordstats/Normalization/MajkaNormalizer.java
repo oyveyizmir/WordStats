@@ -14,7 +14,7 @@ public class MajkaNormalizer implements Normalizer {
     private Process process;
     private BufferedWriter stdin;
     private BufferedReader stdout;
-    private Pattern outputPattern = Pattern.compile("(\\p{L}+):(\\p{L}+)");
+    private Pattern outputPattern = Pattern.compile("(\\p{L}+):(\\p{L}+\\d*)");
 
     public MajkaNormalizer(Language language) {
         this.language = language;
@@ -48,22 +48,60 @@ public class MajkaNormalizer implements Normalizer {
         String line;
         while(stdout.ready() && (line = stdout.readLine()) != null) {
             Matcher matcher = outputPattern.matcher(line);
-            if (!matcher.find())
-                throw new Exception("Cannot parse " + line);
+            if (!matcher.find()) {
+                System.out.println("Cannot parse word: " + word + ", " + line);
+                continue;
+                //throw new Exception("Cannot parse word: " + word + ", " + line);
+            }
             String normalizedWord = matcher.group(1);
-            PartOfSpeech partOfSpeech = toPartOfSpeech(matcher.group(2));
-
-            result.add(new NormalizationResult(normalizedWord, partOfSpeech, line));
+            try {
+                PartOfSpeech partOfSpeech = toPartOfSpeech(matcher.group(2));
+                if (partOfSpeech == PartOfSpeech.PresentParticiple || partOfSpeech == PartOfSpeech.PastParticiple)
+                    continue;
+                result.add(new NormalizationResult(normalizedWord, partOfSpeech, line));
+            }
+            catch(Exception e)
+            {
+                throw new Exception("Error while processing " + line, e);
+            }
         }
         return result;
     }
 
-    private PartOfSpeech toPartOfSpeech(String str) throws Exception {
+    private static PartOfSpeech toPartOfSpeech(String str) throws Exception {
         switch(str) {
+            case "ABK":
+                return PartOfSpeech.Abbreviation;
+            case "ADJ":
+                return PartOfSpeech.Adjective;
+            case "ADV":
+                return PartOfSpeech.Adverb;
+            case "ART":
+                return PartOfSpeech.Article;
+            case "EIG":
+                return PartOfSpeech.ProperNoun;
+            case "INJ":
+                return PartOfSpeech.Intejection;
+            case "KON":
+                return PartOfSpeech.Conjunction;
+            case "NEG":
+                return PartOfSpeech.Negation;
+            case "PA1":
+                return PartOfSpeech.PresentParticiple;
+            case "PA2":
+                return PartOfSpeech.PastParticiple;
+            case "PRO":
+                return PartOfSpeech.Pronoun;
+            case "PRP":
+                return PartOfSpeech.Preposition;
             case "SUB":
                 return PartOfSpeech.Noun;
+            case "ZAL":
+                return PartOfSpeech.Numeral;
             case "VER":
                 return PartOfSpeech.Verb;
+            case "ZUS":
+                return PartOfSpeech.ZUS; //TODO: what is it?
             default:
                 throw new Exception("Unknown part of speech " + str);
         }

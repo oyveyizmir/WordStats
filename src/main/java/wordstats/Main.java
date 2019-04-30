@@ -22,11 +22,7 @@ public class Main {
 
         String word;
         while ((word = reader.getNextWord()) != null) {
-            System.out.println("NORMALIZE: " + word);
             List<NormalizationResult> norm = normalizer.normalize(word);
-            for (NormalizationResult res : norm) {
-                System.out.println(res.word + "," + res.partOfSpeech + "," + res.details);
-            }
             counter.count(word);
         }
 
