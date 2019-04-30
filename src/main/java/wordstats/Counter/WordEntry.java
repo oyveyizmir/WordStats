@@ -1,37 +1,50 @@
 package wordstats.Counter;
 
 import wordstats.IntWrapper;
-import wordstats.Variation;
+import wordstats.PartOfSpeech;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class WordEntry {
-
-    private String word;
+    private final String word;
     private int totalCount;
-    private HashMap<String, IntWrapper> variations = new HashMap<>();
+    private Map<String, IntWrapper> variations = new HashMap<>();
+    private Map<PartOfSpeech, IntWrapper> partsOfSpeech = new HashMap<>();
     private ArrayList<Variation> sortedVariations = new ArrayList<>();
+
+    public WordEntry(String word) {
+        this.word = word;
+    }
 
     public String getWord() {
         return word;
     }
 
-    public void count(String word) {
-        if (this.word == null)
-            this.word = word;
+    public void count(String variation, PartOfSpeech partOfSpeech) {
+        countVariation(variation);
 
-        IntWrapper count = variations.get(word);
-        if (count == null)
-            variations.put(word, new IntWrapper(1));
-        else
-            count.increment();
+        if (partOfSpeech != null)
+            countPartOfSpeech(partOfSpeech);
 
         totalCount++;
     }
 
-    public void postprocess() {
-        sortedVariations.sort((a, b) -> b.getCount() - a.getCount());
+    private void countVariation(String word) {
+        incrementCounter(variations, word);
+    }
+
+    private void countPartOfSpeech(PartOfSpeech partOfSpeech) {
+        incrementCounter(partsOfSpeech, partOfSpeech);
+    }
+
+    private static <T> void incrementCounter(Map<T, IntWrapper> map, T key) {
+        IntWrapper count = map.get(key);
+        if (count == null)
+            map.put(key, new IntWrapper(1));
+        else
+            count.increment();
     }
 
     public int getCount() { return totalCount; }

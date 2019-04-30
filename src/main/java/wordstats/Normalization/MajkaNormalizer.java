@@ -4,6 +4,7 @@ import wordstats.Language;
 import wordstats.PartOfSpeech;
 
 import java.io.*;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -14,7 +15,7 @@ public class MajkaNormalizer implements Normalizer {
     private Process process;
     private BufferedWriter stdin;
     private BufferedReader stdout;
-    private Pattern outputPattern = Pattern.compile("(\\p{L}+):(\\p{L}+\\d*)");
+    private Pattern outputPattern = Pattern.compile("((\\p{L}+)|\\?):(\\p{L}+\\d*)");
 
     public MajkaNormalizer(Language language) {
         this.language = language;
@@ -33,18 +34,19 @@ public class MajkaNormalizer implements Normalizer {
 
     public void initialize() throws Exception {
         String dictionary = getDictionary(language);
+        System.out.println(FileSystems.getDefault().getPath(".").toAbsolutePath().toString()); //TODO: remove
         process = Runtime.getRuntime().exec("C:\\opt\\majka\\majka.exe -f C:\\opt\\majka\\" + dictionary);
         stdin = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
         stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
     }
 
     @Override
-    public List<NormalizationResult> normalize(String word) throws Exception {
+    public List<NormalizedWord> normalize(String word) throws Exception {
         stdin.write(word);
         stdin.newLine();
         stdin.flush();
 
-        ArrayList<NormalizationResult> result = new ArrayList<>();
+        ArrayList<NormalizedWord> result = new ArrayList<>();
         String line;
         while(stdout.ready() && (line = stdout.readLine()) != null) {
             Matcher matcher = outputPattern.matcher(line);
@@ -55,10 +57,10 @@ public class MajkaNormalizer implements Normalizer {
             }
             String normalizedWord = matcher.group(1);
             try {
-                PartOfSpeech partOfSpeech = toPartOfSpeech(matcher.group(2));
+                PartOfSpeech partOfSpeech = toPartOfSpeech(matcher.group(3));
                 if (partOfSpeech == PartOfSpeech.PresentParticiple || partOfSpeech == PartOfSpeech.PastParticiple)
                     continue;
-                result.add(new NormalizationResult(normalizedWord, partOfSpeech, line));
+                result.add(new NormalizedWord(normalizedWord, partOfSpeech, line));
             }
             catch(Exception e)
             {
@@ -103,7 +105,8 @@ public class MajkaNormalizer implements Normalizer {
             case "ZUS":
                 return PartOfSpeech.ZUS; //TODO: what is it?
             default:
-                throw new Exception("Unknown part of speech " + str);
+                return PartOfSpeech.ZUS;
+                //throw new Exception("Unknown part of speech " + str);
         }
     }
 }

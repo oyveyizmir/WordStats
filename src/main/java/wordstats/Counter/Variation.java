@@ -1,4 +1,4 @@
-package wordstats;
+package wordstats.Counter;
 
 public class Variation {
     private String word;

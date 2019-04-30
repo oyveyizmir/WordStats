@@ -2,18 +2,18 @@ package wordstats.Normalization;
 
 import wordstats.PartOfSpeech;
 
-public class NormalizationResult {
+public class NormalizedWord {
     public final String word;
     public final PartOfSpeech partOfSpeech;
-    public final String details;
+    public final String morphDetails;
 
-    public NormalizationResult(String word) {
+    public NormalizedWord(String word) {
         this(word, null, null);
     }
 
-    public NormalizationResult(String word, PartOfSpeech partOfSpeech, String details) {
+    public NormalizedWord(String word, PartOfSpeech partOfSpeech, String details) {
         this.word = word;
         this.partOfSpeech = partOfSpeech;
-        this.details = details;
+        this.morphDetails = details;
     }
 }

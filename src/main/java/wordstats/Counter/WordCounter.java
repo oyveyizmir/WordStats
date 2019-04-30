@@ -1,5 +1,7 @@
 package wordstats.Counter;
 
+import wordstats.Normalization.NormalizedWord;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,15 +10,19 @@ public class WordCounter {
     private HashMap<String, WordEntry> words = new HashMap<>();
     private List<WordEntry> sortedWords;
 
-    public void count(String word) {
+    public void count(NormalizedWord normWord, String word) {
         sortedWords = null;
-        String key = word.toLowerCase();
+        WordEntry wordEntry = getWordEntry(normWord.word);
+        wordEntry.count(word, normWord.partOfSpeech);
+    }
+
+    private WordEntry getWordEntry(String key) {
         WordEntry wordEntry = words.get(key);
         if (wordEntry == null) {
-            wordEntry = new WordEntry();
+            wordEntry = new WordEntry(key);
             words.put(key, wordEntry);
         }
-        wordEntry.count(word);
+        return wordEntry;
     }
 
     private void sortByFrequency() {
@@ -25,7 +31,7 @@ public class WordCounter {
                 .collect(Collectors.toList());
     }
 
-    public List<WordEntry> getWords() {
+    public List<WordEntry> getSortedEntries() {
         if (sortedWords == null)
             sortByFrequency();
         return sortedWords;

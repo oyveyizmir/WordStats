@@ -3,5 +3,5 @@ package wordstats.Normalization;
 import java.util.List;
 
 public interface Normalizer {
-    List<NormalizationResult> normalize(String word) throws Exception;
+    List<NormalizedWord> normalize(String word) throws Exception;
 }
