@@ -11,7 +11,7 @@ public class WordCounter {
     private List<WordEntry> sortedWords;
 
     public void count(NormalizedWord normWord, String variation) {
-        System.out.println("COUNTING WORD " + normWord.word + " VAR " + variation);
+        System.err.println("COUNTING WORD " + normWord.word + " VAR " + variation);
 
         sortedWords = null;
         WordEntry wordEntry = getWordEntry(normWord.word);

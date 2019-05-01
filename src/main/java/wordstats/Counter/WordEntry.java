@@ -27,7 +27,7 @@ public class WordEntry {
     public Map<PartOfSpeech, IntWrapper> getPartsOfSpeech() { return partsOfSpeech; }
 
     public void count(String variation, PartOfSpeech partOfSpeech) {
-        System.out.println("COUNTING WORD " + word + " VAR " + variation + " POS " + partOfSpeech);
+        System.err.println("COUNTING WORD " + word + " VAR " + variation + " POS " + partOfSpeech);
 
         countVariation(variation);
 

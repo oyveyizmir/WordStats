@@ -43,7 +43,7 @@ public class Main {
 
         String word;
         while ((word = reader.getNextWord()) != null) {
-            System.out.println("WORD " + word);
+            System.err.println("WORD " + word);
 
             List<NormalizedWord> normWords = normalizer.normalize(word);
             for (NormalizedWord normWord : normWords)

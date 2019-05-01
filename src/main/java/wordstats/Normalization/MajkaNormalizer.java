@@ -39,11 +39,32 @@ public class MajkaNormalizer implements Normalizer {
         process = Runtime.getRuntime().exec("C:\\opt\\majka\\majka.exe -f C:\\opt\\majka\\" + dictionary);
         stdin = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
         stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+        System.err.println("Initializing");
+
+        stdin.write("ja");
+        stdin.newLine();
+        stdin.flush();
+
+        System.err.print("Waiting");
+        for (int i = 1; !stdout.ready() && i <= 60; i++) {
+            Thread.sleep(1000);
+            System.err.print(".");
+        }
+        System.err.println();
+
+        if (stdout.ready()) {
+            String line = stdout.readLine();
+            if (!"ja:ADV.MOD".equals(line))
+                throw new Exception("Majka initialization failed. Unexpected output: " + line);
+        }
+
+        System.err.println("Initialized");
     }
 
     @Override
     public List<NormalizedWord> normalize(String word) throws Exception {
-        System.out.println("NORMALIZING " + word);
+        System.err.println("NORMALIZING " + word);
         stdin.write(word);
         stdin.newLine();
         stdin.flush();
@@ -51,11 +72,11 @@ public class MajkaNormalizer implements Normalizer {
         Map<String, NormalizedWord> normWords = new HashMap<>();
         String line;
 
-        while (/*stdout.ready() &&*/ (line = stdout.readLine()) != null) {
-            System.out.println("READ " + line);
+        while (stdout.ready() && (line = stdout.readLine()) != null) {
+            System.err.println("READ " + line);
             Matcher matcher = outputPattern.matcher(line);
             if (!matcher.find()) {
-                System.out.println("Cannot parse word: " + word + ", " + line);
+                System.err.println("Cannot parse word: " + word + ", " + line);
                 continue;
                 //throw new Exception("Cannot parse word: " + word + ", " + line);
             }
