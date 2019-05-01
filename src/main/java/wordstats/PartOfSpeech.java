@@ -6,7 +6,7 @@ public enum PartOfSpeech {
     Adverb,
     Article,
     Conjunction,
-    Intejection,
+    Interjection,
     Negation,
     Noun,
     Numeral,

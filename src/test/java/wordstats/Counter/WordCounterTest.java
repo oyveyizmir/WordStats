@@ -4,7 +4,9 @@ import org.junit.Test;
 import wordstats.Normalization.NormalizedWord;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
@@ -29,5 +31,14 @@ public class WordCounterTest {
 
         assertEquals("x", entries.get(2).getWord());
         assertEquals(1, entries.get(2).getCount());
+    }
+
+    @Test
+    public void test() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("A", 1);
+        map.put("B", 2);
+        Integer x = map.computeIfAbsent("C", k -> 100);
+        System.out.println(map);
     }
 }

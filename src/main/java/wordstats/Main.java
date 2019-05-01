@@ -6,11 +6,15 @@ import wordstats.Counter.WordCounter;
 import wordstats.Counter.WordEntry;
 import wordstats.Normalization.MajkaNormalizer;
 import wordstats.Normalization.NormalizedWord;
+import wordstats.Normalization.Normalizer;
+import wordstats.Normalization.NullNormalizer;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Main {
     static void Test() {
@@ -32,11 +36,15 @@ public class Main {
 
         WordReader reader = new WordReader(System.in);
         WordCounter counter = new WordCounter();
-        MajkaNormalizer normalizer = new MajkaNormalizer(conf.language);
+        MajkaNormalizer  normalizer;
+        normalizer = new MajkaNormalizer(conf.language);
         normalizer.initialize();
+        //Normalizer normalizer = new NullNormalizer();
 
         String word;
         while ((word = reader.getNextWord()) != null) {
+            System.out.println("WORD " + word);
+
             List<NormalizedWord> normWords = normalizer.normalize(word);
             for (NormalizedWord normWord : normWords)
                 counter.count(normWord, word);
@@ -44,7 +52,23 @@ public class Main {
 
         PrintStream out = new PrintStream(System.out, true, "UTF-8");
         for (WordEntry entry : counter.getSortedEntries()) {
-            out.print(entry.getWord() + "," + entry.getCount());
+            out.print(entry.getWord() + "," + entry.getCount() + ",[");
+            int posIndex = 0;
+            for (PartOfSpeech pos : entry.getPartsOfSpeech().keySet()) {
+                if (posIndex > 0)
+                    out.print(",");
+                out.print(pos);
+                posIndex++;
+            }
+            out.print("],[");
+            int varIndex = 0;
+            for (String v : entry.getVariations().keySet()) {
+                if (varIndex > 0)
+                    out.print(",");
+                out.print(v);
+                varIndex++;
+            }
+            out.println("]");
             //TODO: add variations
         }
     }

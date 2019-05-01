@@ -18,11 +18,17 @@ public class WordEntry {
         this.word = word;
     }
 
-    public String getWord() {
-        return word;
-    }
+    public String getWord() { return word; }
+
+    public int getCount() { return totalCount; }
+
+    public Map<String, IntWrapper> getVariations() { return variations; }
+
+    public Map<PartOfSpeech, IntWrapper> getPartsOfSpeech() { return partsOfSpeech; }
 
     public void count(String variation, PartOfSpeech partOfSpeech) {
+        System.out.println("COUNTING WORD " + word + " VAR " + variation + " POS " + partOfSpeech);
+
         countVariation(variation);
 
         if (partOfSpeech != null)
@@ -46,6 +52,4 @@ public class WordEntry {
         else
             count.increment();
     }
-
-    public int getCount() { return totalCount; }
 }

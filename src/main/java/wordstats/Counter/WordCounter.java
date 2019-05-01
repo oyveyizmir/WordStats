@@ -10,19 +10,22 @@ public class WordCounter {
     private HashMap<String, WordEntry> words = new HashMap<>();
     private List<WordEntry> sortedWords;
 
-    public void count(NormalizedWord normWord, String word) {
+    public void count(NormalizedWord normWord, String variation) {
+        System.out.println("COUNTING WORD " + normWord.word + " VAR " + variation);
+
         sortedWords = null;
         WordEntry wordEntry = getWordEntry(normWord.word);
-        wordEntry.count(word, normWord.partOfSpeech);
+        wordEntry.count(variation, normWord.partOfSpeech);
     }
 
     private WordEntry getWordEntry(String key) {
-        WordEntry wordEntry = words.get(key);
-        if (wordEntry == null) {
-            wordEntry = new WordEntry(key);
-            words.put(key, wordEntry);
+        //return words.computeIfAbsent(key, WordEntry::new);
+        WordEntry entry = words.get(key);
+        if (entry == null) {
+            entry = new WordEntry(key);
+            words.put(key, entry);
         }
-        return wordEntry;
+        return entry;
     }
 
     private void sortByFrequency() {

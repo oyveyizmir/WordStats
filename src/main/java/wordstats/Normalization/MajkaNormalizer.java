@@ -4,9 +4,10 @@ import wordstats.Language;
 import wordstats.PartOfSpeech;
 
 import java.io.*;
-import java.nio.file.FileSystems;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +35,7 @@ public class MajkaNormalizer implements Normalizer {
 
     public void initialize() throws Exception {
         String dictionary = getDictionary(language);
-        System.out.println(FileSystems.getDefault().getPath(".").toAbsolutePath().toString()); //TODO: remove
+        //System.out.println(FileSystems.getDefault().getPath(".").toAbsolutePath().toString()); //TODO: remove
         process = Runtime.getRuntime().exec("C:\\opt\\majka\\majka.exe -f C:\\opt\\majka\\" + dictionary);
         stdin = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
         stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -42,13 +43,16 @@ public class MajkaNormalizer implements Normalizer {
 
     @Override
     public List<NormalizedWord> normalize(String word) throws Exception {
+        System.out.println("NORMALIZING " + word);
         stdin.write(word);
         stdin.newLine();
         stdin.flush();
 
-        ArrayList<NormalizedWord> result = new ArrayList<>();
+        Map<String, NormalizedWord> normWords = new HashMap<>();
         String line;
-        while(stdout.ready() && (line = stdout.readLine()) != null) {
+
+        while (/*stdout.ready() &&*/ (line = stdout.readLine()) != null) {
+            System.out.println("READ " + line);
             Matcher matcher = outputPattern.matcher(line);
             if (!matcher.find()) {
                 System.out.println("Cannot parse word: " + word + ", " + line);
@@ -59,17 +63,31 @@ public class MajkaNormalizer implements Normalizer {
             try {
                 PartOfSpeech partOfSpeech = toPartOfSpeech(matcher.group(3));
                 if (partOfSpeech == PartOfSpeech.PresentParticiple || partOfSpeech == PartOfSpeech.PastParticiple)
-                    continue;
-                result.add(new NormalizedWord(normalizedWord, partOfSpeech, line));
+                    continue; //TODO: only for German
+                NormalizedWord normWord = getNormalizedWord(normWords, normalizedWord, partOfSpeech);
+                normWord.addMorphDetail(line);
             }
             catch(Exception e)
             {
                 throw new Exception("Error while processing " + line, e);
             }
         }
-        return result;
+
+        return new ArrayList<>(normWords.values());
     }
 
+    private static NormalizedWord getNormalizedWord(Map<String, NormalizedWord> normWords,
+                                             String word, PartOfSpeech partOfSpeech) {
+        //NormalizedWord normWord = normWords.computeIfAbsent(normalizedWord + ":" + partOfSpeech,
+        //        k -> new NormalizedWord(normalizedWord, partOfSpeech));
+        String key = word + ":" + partOfSpeech;
+        NormalizedWord normWord = normWords.get(key);
+        if (normWord == null) {
+            normWord = new NormalizedWord(word, partOfSpeech);
+            normWords.put(key, normWord);
+        }
+        return normWord;
+    }
     private static PartOfSpeech toPartOfSpeech(String str) throws Exception {
         switch(str) {
             case "ABK":
@@ -83,7 +101,7 @@ public class MajkaNormalizer implements Normalizer {
             case "EIG":
                 return PartOfSpeech.ProperNoun;
             case "INJ":
-                return PartOfSpeech.Intejection;
+                return PartOfSpeech.Interjection;
             case "KON":
                 return PartOfSpeech.Conjunction;
             case "NEG":
