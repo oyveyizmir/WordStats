@@ -47,7 +47,7 @@ public class MajkaNormalizer implements Normalizer {
         stdin.flush();
 
         System.err.print("Waiting");
-        for (int i = 1; !stdout.ready() && i <= 60; i++) {
+        for (int i = 0; !stdout.ready() && i < 60; i++) {
             Thread.sleep(1000);
             System.err.print(".");
         }
@@ -72,6 +72,13 @@ public class MajkaNormalizer implements Normalizer {
         Map<String, NormalizedWord> normWords = new HashMap<>();
         String line;
 
+        for (int i = 0; !stdout.ready() && i < 10; i++) {
+            Thread.sleep(100);
+        }
+
+        if (!stdout.ready())
+            System.err.println("No response for " + word);
+
         while (stdout.ready() && (line = stdout.readLine()) != null) {
             System.err.println("READ " + line);
             Matcher matcher = outputPattern.matcher(line);
@@ -92,6 +99,7 @@ public class MajkaNormalizer implements Normalizer {
             {
                 throw new Exception("Error while processing " + line, e);
             }
+            Thread.sleep(100);
         }
 
         return new ArrayList<>(normWords.values());
