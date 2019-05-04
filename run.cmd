@@ -1,0 +1,1 @@
+java -cp ".;log4j-api-2.11.2.jar;log4j-core-2.11.2.jar" wordstats.Main <"C:\projects\WordStats\text\test_de1.txt" >de.txt

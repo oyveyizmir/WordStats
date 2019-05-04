@@ -1,5 +1,7 @@
 package wordstats.Normalization;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import wordstats.Language;
 import wordstats.PartOfSpeech;
 
@@ -12,6 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MajkaNormalizer implements Normalizer {
+    private static Logger logger = LogManager.getLogger();
+
     private Language language;
     private Process process;
     private BufferedWriter stdin;
@@ -40,18 +44,15 @@ public class MajkaNormalizer implements Normalizer {
         stdin = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
         stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-        System.err.println("Initializing");
+        logger.debug("Initializing");
 
         stdin.write("ja");
         stdin.newLine();
         stdin.flush();
 
-        System.err.print("Waiting");
-        for (int i = 0; !stdout.ready() && i < 60; i++) {
+        logger.debug("Waiting for response from majka");
+        for (int i = 0; !stdout.ready() && i < 60; i++)
             Thread.sleep(1000);
-            System.err.print(".");
-        }
-        System.err.println();
 
         if (stdout.ready()) {
             String line = stdout.readLine();
@@ -59,12 +60,13 @@ public class MajkaNormalizer implements Normalizer {
                 throw new Exception("Majka initialization failed. Unexpected output: " + line);
         }
 
-        System.err.println("Initialized");
+        logger.debug("Initialized");
     }
 
     @Override
     public List<NormalizedWord> normalize(String word) throws Exception {
-        System.err.println("NORMALIZING " + word);
+        logger.debug("Normalizing \"" + word +"\"");
+
         stdin.write(word);
         stdin.newLine();
         stdin.flush();
@@ -78,10 +80,12 @@ public class MajkaNormalizer implements Normalizer {
 
         if (stdout.ready()) {
             while (stdout.ready() && (line = stdout.readLine()) != null) {
-                System.err.println("READ " + line);
+                logger.debug("Read response \"" + line + "\"");
                 Matcher matcher = outputPattern.matcher(line);
                 if (!matcher.find()) {
-                    System.err.println("Cannot parse word: " + word + ", " + line);
+                    String message = "Cannot parse response for word " + word + ": " + line;
+                    logger.info(message);
+                    System.err.println(message);
                     continue;
                     //throw new Exception("Cannot parse word: " + word + ", " + line);
                 }
@@ -97,8 +101,11 @@ public class MajkaNormalizer implements Normalizer {
                 }
                 Thread.sleep(10);
             }
-        } else
-            System.err.println("No response for " + word);
+        } else {
+            String message = "No response for word \"" + word + "\"";
+            logger.info(message);
+            System.err.println(message);
+        }
 
         return new ArrayList<>(normWords.values());
     }

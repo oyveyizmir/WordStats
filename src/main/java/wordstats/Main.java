@@ -1,5 +1,7 @@
 package wordstats;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import wordstats.Configuration.CommandLineParser;
 import wordstats.Configuration.Settings;
 import wordstats.Counter.WordCounter;
@@ -14,7 +16,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Main {
+    private static Logger logger = LogManager.getLogger();
+
     public static void main(String[] args) throws Exception {
+        logger.info("Starting WordStats");
+
         CommandLineParser parser = new CommandLineParser();
         Settings conf = parser.ParseArgs(args);
 
@@ -28,7 +34,7 @@ public class Main {
 
         String word;
         while ((word = reader.getNextWord()) != null) {
-            System.err.println("WORD " + word);
+            logger.debug("Processing word \"" + word + "\"");
 
             List<NormalizedWord> normWords = normalizer.normalize(word);
             for (NormalizedWord normWord : normWords)
@@ -56,5 +62,6 @@ public class Main {
             out.println("]");
             //TODO: add variations
         }
+        logger.info("WordStats finished");
     }
 }

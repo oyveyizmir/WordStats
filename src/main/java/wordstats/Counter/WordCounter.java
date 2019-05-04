@@ -1,5 +1,7 @@
 package wordstats.Counter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import wordstats.Normalization.NormalizedWord;
 
 import java.util.HashMap;
@@ -7,11 +9,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class WordCounter {
+    private static Logger logger = LogManager.getLogger();
+
     private HashMap<String, WordEntry> words = new HashMap<>();
     private List<WordEntry> sortedWords;
 
     public void count(NormalizedWord normWord, String variation) {
-        System.err.println("COUNTING WORD " + normWord.word + " VAR " + variation);
+        logger.debug("Counting word \"" + normWord.word + "\", variation \"" + variation + "\"");
 
         sortedWords = null;
         WordEntry wordEntry = getWordEntry(normWord.word);
