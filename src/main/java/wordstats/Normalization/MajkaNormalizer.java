@@ -16,7 +16,7 @@ public class MajkaNormalizer implements Normalizer {
     private Process process;
     private BufferedWriter stdin;
     private BufferedReader stdout;
-    private Pattern outputPattern = Pattern.compile("((\\p{L}+)|\\?):(\\p{L}+\\d*)");
+    private Pattern outputPattern = Pattern.compile("(.+):(\\p{L}+\\d*)");
 
     public MajkaNormalizer(Language language) {
         this.language = language;
@@ -73,36 +73,41 @@ public class MajkaNormalizer implements Normalizer {
         String line;
 
         for (int i = 0; !stdout.ready() && i < 10; i++) {
-            Thread.sleep(100);
+            Thread.sleep(10);
         }
 
-        if (!stdout.ready())
+        if (stdout.ready()) {
+            while (stdout.ready() && (line = stdout.readLine()) != null) {
+                System.err.println("READ " + line);
+                Matcher matcher = outputPattern.matcher(line);
+                if (!matcher.find()) {
+                    System.err.println("Cannot parse word: " + word + ", " + line);
+                    continue;
+                    //throw new Exception("Cannot parse word: " + word + ", " + line);
+                }
+                String normalizedWord = dropSpecialChars(matcher.group(1));
+                try {
+                    PartOfSpeech partOfSpeech = toPartOfSpeech(matcher.group(2));
+                    if (partOfSpeech == PartOfSpeech.PresentParticiple || partOfSpeech == PartOfSpeech.PastParticiple)
+                        continue; //TODO: only for German
+                    NormalizedWord normWord = getNormalizedWord(normWords, normalizedWord, partOfSpeech);
+                    normWord.addMorphDetail(line);
+                } catch (Exception e) {
+                    throw new Exception("Error while processing " + line, e);
+                }
+                Thread.sleep(10);
+            }
+        } else
             System.err.println("No response for " + word);
 
-        while (stdout.ready() && (line = stdout.readLine()) != null) {
-            System.err.println("READ " + line);
-            Matcher matcher = outputPattern.matcher(line);
-            if (!matcher.find()) {
-                System.err.println("Cannot parse word: " + word + ", " + line);
-                continue;
-                //throw new Exception("Cannot parse word: " + word + ", " + line);
-            }
-            String normalizedWord = matcher.group(1);
-            try {
-                PartOfSpeech partOfSpeech = toPartOfSpeech(matcher.group(3));
-                if (partOfSpeech == PartOfSpeech.PresentParticiple || partOfSpeech == PartOfSpeech.PastParticiple)
-                    continue; //TODO: only for German
-                NormalizedWord normWord = getNormalizedWord(normWords, normalizedWord, partOfSpeech);
-                normWord.addMorphDetail(line);
-            }
-            catch(Exception e)
-            {
-                throw new Exception("Error while processing " + line, e);
-            }
-            Thread.sleep(100);
-        }
-
         return new ArrayList<>(normWords.values());
+    }
+
+    private static String dropSpecialChars(String str) {
+        return str.chars()
+                .filter(c -> "[]()".indexOf(c) < 0)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
     }
 
     private static NormalizedWord getNormalizedWord(Map<String, NormalizedWord> normWords,

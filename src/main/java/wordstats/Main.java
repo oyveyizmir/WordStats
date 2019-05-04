@@ -4,10 +4,7 @@ import wordstats.Configuration.CommandLineParser;
 import wordstats.Configuration.Settings;
 import wordstats.Counter.WordCounter;
 import wordstats.Counter.WordEntry;
-import wordstats.Normalization.MajkaNormalizer;
-import wordstats.Normalization.NormalizedWord;
-import wordstats.Normalization.Normalizer;
-import wordstats.Normalization.NullNormalizer;
+import wordstats.Normalization.*;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -17,28 +14,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Main {
-    static void Test() {
-        Pattern outputPattern = Pattern.compile("((\\p{L}+)|\\?):(\\p{L}+\\d*)");
-        Matcher m = outputPattern.matcher("Gutenberg:EIG.NAC.AKK.SIN.FEM.ART");
-        if (!m.find()) {
-            System.out.println("NOT FOUND");
-            return;
-        }
-        System.out.println(m.group(0));
-        System.out.println(m.group(1));
-        System.out.println(m.group(2));
-        System.out.println(m.group(3));
-    }
-
     public static void main(String[] args) throws Exception {
         CommandLineParser parser = new CommandLineParser();
         Settings conf = parser.ParseArgs(args);
 
         WordReader reader = new WordReader(System.in);
         WordCounter counter = new WordCounter();
-        MajkaNormalizer  normalizer;
-        normalizer = new MajkaNormalizer(conf.language);
-        normalizer.initialize();
+        MajkaNormalizer  majkaNormalizer = new MajkaNormalizer(conf.language);
+        majkaNormalizer.initialize();
+        Normalizer normalizer = new CacheNormalizer(majkaNormalizer);
+        //Normalizer normalizer = majkaNormalizer;
         //Normalizer normalizer = new NullNormalizer();
 
         String word;
