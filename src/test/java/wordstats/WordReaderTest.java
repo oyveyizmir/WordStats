@@ -4,10 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -97,7 +94,7 @@ public class WordReaderTest {
 
     @Test
     public void testWordReader() throws Exception {
-        try (InputStream stream = toInputStream(text)) {
+        try (InputStreamReader stream = toInputStream(text)) {
             WordReader reader = new WordReader(stream);
             String word;
             int wordCount = 0;
@@ -107,7 +104,9 @@ public class WordReaderTest {
         }
     }
 
-    private InputStream toInputStream(String s) {
-        return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
+    private InputStreamReader toInputStream(String s) {
+        return new InputStreamReader(
+                new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
+                StandardCharsets.UTF_8);
     }
 }

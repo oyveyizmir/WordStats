@@ -6,6 +6,7 @@ import wordstats.Language;
 import wordstats.PartOfSpeech;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +42,8 @@ public class MajkaNormalizer implements Normalizer {
         String dictionary = getDictionary(language);
         //System.out.println(FileSystems.getDefault().getPath(".").toAbsolutePath().toString()); //TODO: remove
         process = Runtime.getRuntime().exec("C:\\opt\\majka\\majka.exe -f C:\\opt\\majka\\" + dictionary);
-        stdin = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-        stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        stdin = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), StandardCharsets.UTF_8));
+        stdout = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
 
         logger.debug("Initializing");
 
