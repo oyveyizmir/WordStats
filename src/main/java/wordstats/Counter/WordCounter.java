@@ -15,7 +15,9 @@ public class WordCounter {
     private List<WordEntry> sortedWords;
 
     public void count(NormalizedWord normWord, String variation) {
-        logger.debug("Counting word \"" + normWord.word + "\", variation \"" + variation + "\"");
+        //logger.debug("Counting word \"" + normWord.word + "\", variation \"" + variation + "\"");
+        logger.debug("Counting word \"{}\", part of speech \"{}\", variation \"{}\"",
+                normWord.word, normWord.partOfSpeech, variation);
 
         sortedWords = null;
         WordEntry wordEntry = getWordEntry(normWord.word);

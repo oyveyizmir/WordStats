@@ -3,4 +3,5 @@
 .idea/compiler.xml
 .idea/copyright/
 /text/*
+/coverage
 out

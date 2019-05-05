@@ -14,6 +14,9 @@ public class CacheNormalizer implements Normalizer {
 
     @Override
     public List<NormalizedWord> normalize(String word) throws Exception {
+        if (word == null)
+            throw new IllegalArgumentException("word");
+
         List<NormalizedWord> normWords = cache.get(word);
         if (normWords == null) {
             normWords = normalizer.normalize(word);
