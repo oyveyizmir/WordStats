@@ -4,4 +4,5 @@
 .idea/copyright/
 /text/*
 /coverage
+/log/*
 out

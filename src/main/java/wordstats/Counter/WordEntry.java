@@ -44,10 +44,7 @@ public class WordEntry {
     }
 
     private static <T> void incrementCounter(Map<T, IntWrapper> map, T key) {
-        IntWrapper count = map.get(key);
-        if (count == null)
-            map.put(key, new IntWrapper(1));
-        else
-            count.increment();
+        IntWrapper count = map.computeIfAbsent(key, k -> new IntWrapper(0));
+        count.increment();
     }
 }

@@ -15,23 +15,20 @@ public class WordCounter {
     private List<WordEntry> sortedWords;
 
     public void count(NormalizedWord normWord, String variation) {
-        //logger.debug("Counting word \"" + normWord.word + "\", variation \"" + variation + "\"");
+        if (normWord == null)
+            throw new IllegalArgumentException("normWord");
+        if (variation == null)
+            throw new IllegalArgumentException("variation");
+
         logger.debug("Counting word \"{}\", part of speech \"{}\", variation \"{}\"",
                 normWord.word, normWord.partOfSpeech, variation);
 
-        sortedWords = null;
         WordEntry wordEntry = getWordEntry(normWord.word);
         wordEntry.count(variation, normWord.partOfSpeech);
     }
 
     private WordEntry getWordEntry(String key) {
-        //return words.computeIfAbsent(key, WordEntry::new);
-        WordEntry entry = words.get(key);
-        if (entry == null) {
-            entry = new WordEntry(key);
-            words.put(key, entry);
-        }
-        return entry;
+        return words.computeIfAbsent(key, WordEntry::new);
     }
 
     private void sortByFrequency() {

@@ -10,10 +10,6 @@ import wordstats.Normalization.*;
 
 import java.io.PrintStream;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class Main {
     private static Logger logger = LogManager.getLogger();
@@ -28,7 +24,7 @@ public class Main {
         WordCounter counter = new WordCounter();
         MajkaNormalizer  majkaNormalizer = new MajkaNormalizer(conf.language);
         majkaNormalizer.initialize();
-        Normalizer normalizer = new CacheNormalizer(majkaNormalizer);
+        CacheNormalizer normalizer = new CacheNormalizer(majkaNormalizer);
         //Normalizer normalizer = majkaNormalizer;
         //Normalizer normalizer = new NullNormalizer();
 
@@ -40,6 +36,10 @@ public class Main {
             for (NormalizedWord normWord : normWords)
                 counter.count(normWord, word);
         }
+
+        logger.info("Cache usage statistics. Request count: {}, hit count: {}, hit ratio: {}%",
+                normalizer.getRequestCount(), normalizer.getHitCount(),
+                Math.round(100.0 * normalizer.getHitCount() / normalizer.getRequestCount()));
 
         PrintStream out = new PrintStream(System.out, true, "UTF-8");
         for (WordEntry entry : counter.getSortedEntries()) {

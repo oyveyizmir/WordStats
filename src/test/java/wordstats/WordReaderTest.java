@@ -5,8 +5,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
@@ -84,6 +86,11 @@ public class WordReaderTest {
                     "п'ять шість сім",
                     new String[]{"п'ять", "шість", "сім"},
                     "Apostrophe"
+                },
+                {
+                    "weiß schön über",
+                    new String[] {"weiß", "schön", "über"},
+                    "German letters"
                 }
         });
     }
@@ -95,12 +102,12 @@ public class WordReaderTest {
             String word;
             int wordCount = 0;
             while((word = reader.getNextWord()) != null)
-                assertEquals("Wrong word. Case: " + description, expectedWords[wordCount++], word);
-            assertEquals("Wrong word count. Case: " + description, expectedWords.length, wordCount);
+                assertEquals("Wrong word. Case: " + description + ": ", expectedWords[wordCount++], word);
+            assertEquals("Wrong word count. Case: " + description + ": ", expectedWords.length, wordCount);
         }
     }
 
-    private InputStream toInputStream(String s) throws UnsupportedEncodingException {
-        return new ByteArrayInputStream(s.getBytes("UTF-8"));
+    private InputStream toInputStream(String s) {
+        return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
     }
 }

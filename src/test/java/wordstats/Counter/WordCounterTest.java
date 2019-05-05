@@ -1,21 +1,24 @@
 package wordstats.Counter;
 
+import org.junit.Before;
 import org.junit.Test;
 import wordstats.Normalization.NormalizedWord;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
 public class WordCounterTest {
-    @Test
-    public void countWords() {
-        WordCounter counter = new WordCounter();
+    private WordCounter counter;
 
+    @Before
+    public void before() {
+        counter = new WordCounter();
+    }
+
+    @Test
+    public void count() {
         Stream.of("Tree", "one", "x", "TREE", "oNe", "trEE")
                 .forEach(x -> counter.count(new NormalizedWord(x.toLowerCase()), x));
 
@@ -33,12 +36,13 @@ public class WordCounterTest {
         assertEquals(1, entries.get(2).getCount());
     }
 
-    @Test
-    public void test() {
-        Map<String, Integer> map = new HashMap<>();
-        map.put("A", 1);
-        map.put("B", 2);
-        Integer x = map.computeIfAbsent("C", k -> 100);
-        System.out.println(map);
+    @Test(expected = IllegalArgumentException.class)
+    public void count_NullNormWord() {
+        counter.count(null, "x");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void count_NullVariation() {
+        counter.count(new NormalizedWord("x"), null);
     }
 }

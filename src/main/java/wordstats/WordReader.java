@@ -1,6 +1,8 @@
 package wordstats;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +20,7 @@ public class WordReader {
     private State state = State.LineRequired;
 
     public WordReader(InputStream in) {
-        scanner = new Scanner(in, "UTF-8");
+        scanner = new Scanner(new InputStreamReader(in, StandardCharsets.UTF_8));
     }
 
     public String getNextWord() throws Exception {

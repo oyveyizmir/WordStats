@@ -94,7 +94,9 @@ public class MajkaNormalizer implements Normalizer {
                     PartOfSpeech partOfSpeech = toPartOfSpeech(matcher.group(2));
                     if (partOfSpeech == PartOfSpeech.PresentParticiple || partOfSpeech == PartOfSpeech.PastParticiple)
                         continue; //TODO: only for German
-                    NormalizedWord normWord = getNormalizedWord(normWords, normalizedWord, partOfSpeech);
+                    NormalizedWord normWord = normWords.computeIfAbsent(
+                            normalizedWord + ":" + partOfSpeech,
+                            k -> new NormalizedWord(normalizedWord, partOfSpeech));
                     normWord.addMorphDetail(line);
                 } catch (Exception e) {
                     throw new Exception("Error while processing " + line, e);
@@ -117,18 +119,6 @@ public class MajkaNormalizer implements Normalizer {
                 .toString();
     }
 
-    private static NormalizedWord getNormalizedWord(Map<String, NormalizedWord> normWords,
-                                             String word, PartOfSpeech partOfSpeech) {
-        //NormalizedWord normWord = normWords.computeIfAbsent(normalizedWord + ":" + partOfSpeech,
-        //        k -> new NormalizedWord(normalizedWord, partOfSpeech));
-        String key = word + ":" + partOfSpeech;
-        NormalizedWord normWord = normWords.get(key);
-        if (normWord == null) {
-            normWord = new NormalizedWord(word, partOfSpeech);
-            normWords.put(key, normWord);
-        }
-        return normWord;
-    }
     private static PartOfSpeech toPartOfSpeech(String str) throws Exception {
         switch(str) {
             case "ABK":
